@@ -1,3 +1,4 @@
+import { RENDER_FLAGS } from '@angular/compiler/src/render3/view/util';
 import { Component, OnInit } from '@angular/core';
 import * as p5 from 'p5';
 
@@ -10,70 +11,55 @@ import * as p5 from 'p5';
 })
 export class MainCanvasComponent implements OnInit {
 
-  maxr = 200;
+  public sketch: p5 | null;
 
-  onclickplus() {
-    this.maxr += 10;
-  }
-  onclickminus() {
-    this.maxr -= 10;
-  }
+  //pos: number[] = new Array(2);
+  reset_flag = false;
+  pen_r = 5;
+  black = [0,0,0];
+  red = [255,0,0];
+  blue = [0, 0, 255];
+  pen_speed = 0;
 
-  public sketch :p5 | null;
-  public xList = [20,132,43,55,670];
+  pen_color = this.black;
+
+  onclick() {
+    this.reset_flag = true;
+  }
+  
   public p5f = (p:p5) =>{
     p.setup = () =>{
       // 画面全体に表示する場合
       //p.createCanvas(p.windowWidth, p.windowHeight);
-      p.createCanvas(900, 700);
-      p.background(200);
+      p.createCanvas(600, 600);
+      p.background(0);
     }
-    let posx = 450;
-    let posy = 350;
-    let prepos: number[] = [-100, 350];
-    let posr = 0;
-    let postheta = 0;
-    
-
     p.draw = () => {
-      //p.background(100);
-      prepos = [posx, posy];
-
-      posr += p.random(-20, 20);
-      while (Math.abs(posr) > this.maxr) {
-        posr += p.random(-20, 20);
+      //p.background(0);
+      p.noStroke();
+      p.fill(this.pen_color);
+      p.circle(p.mouseX, p.mouseY, this.pen_r);
+      
+      this.pen_speed = Math.pow(Math.abs(p.mouseX - p.pmouseX), 2) + Math.pow(Math.abs(p.mouseY - p.pmouseY), 2);
+      //console.log(Math.abs(p.mouseX - p.pmouseX) < 2 && Math.abs(p.mouseY - p.pmouseY) < 2);
+      console.log(this.pen_speed);
+      if (Math.abs(p.mouseX - p.pmouseX) <= 3 && Math.abs(p.mouseY - p.pmouseY) <= 3) {
+        if (this.pen_r > 5) {
+          this.pen_r -= 1;
+        }
+        this.pen_color = this.blue;
+      } else {
+        this.pen_r += 1;
+        this.pen_color = this.red;
       }
-      console.log(posr);
-      postheta += Math.PI / 5 * (p.random()-0.5);
-      posx = 450 + posr * Math.cos(postheta);
-      posy = 350 + posr * Math.sin(postheta);
+      
 
-      //let temp = p.noise(posx * 0.02) * 700;
-      //posy = temp;
-      //console.log(p.random());
 
-      if (posx > 900) {
-        posx = posx - 900;
-        prepos[0] = posx;
+      if (this.reset_flag==true) {
+        p.background(0);
+        this.reset_flag = false;
+        this.pen_r = 5;
       }
-      if (posx < 0) {
-        posx = posx + 900;
-        prepos[0] = posx;
-      }
-      if (posy > 700) {
-        posy = posy - 700;
-        prepos[1] = posy;
-      }
-      if (posy < 0) {
-        posy = posy + 700
-        prepos[1] = posy;
-      }
-
-      p.line(prepos[0], prepos[1], posx, posy);
-      p.circle(posx, posy, 10);
-
-      p.fill(255, 5);
-      p.circle(450, 350, this.maxr*2+10);
     }
   }
   constructor() {
