@@ -45,10 +45,6 @@ export class MainCanvasComponent implements OnInit {
         this.pen_speed = 50;
       }
       
-      //console.log(Math.abs(p.mouseX - p.pmouseX) < 2 && Math.abs(p.mouseY - p.pmouseY) < 2);
-      
-      console.log(this.pen_r);
-      //console.log(this.pen_color);
       
       this.pen_color = [this.pen_speed / 50 * 255, 0, (1 - this.pen_speed / 50) * 255];
 
